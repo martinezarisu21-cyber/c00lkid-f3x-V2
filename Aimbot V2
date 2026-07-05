@@ -1,0 +1,230 @@
+--// Fast Smooth Lock Aim
+--// Stronger sensitivity
+--// Works with NO teams
+--// Mobile GUI + Wall Check
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+----------------------------------------------------
+-- SETTINGS
+----------------------------------------------------
+local SmoothnessValue = 50 -- [SCALE: 1 - 150] Higher = Faster/Snappier, Lower = Smoother
+local FOVRadius = 320
+
+-- Convert the 1-150 scale to a 0-1 alpha value for Lerp
+local Smoothness = math.clamp(SmoothnessValue / 150, 0.01, 1)
+
+----------------------------------------------------
+-- GUI
+----------------------------------------------------
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FastLockAim"
+ScreenGui.Parent = game.CoreGui
+
+local Main = Instance.new("Frame")
+Main.Parent = ScreenGui
+Main.Size = UDim2.new(0,170,0,60)
+Main.Position = UDim2.new(0.5,-85,0.75,0)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,12)
+
+local Button = Instance.new("TextButton")
+Button.Parent = Main
+Button.Size = UDim2.new(1,-10,1,-10)
+Button.Position = UDim2.new(0,5,0,5)
+Button.BackgroundColor3 = Color3.fromRGB(35,35,35)
+Button.Text = "Aimbot"
+Button.TextScaled = true
+Button.Font = Enum.Font.GothamBold
+Button.TextColor3 = Color3.new(1,1,1)
+
+Instance.new("UICorner", Button).CornerRadius = UDim.new(0,10)
+
+----------------------------------------------------
+-- VARIABLES
+----------------------------------------------------
+local Enabled = false
+local CurrentTarget = nil
+
+----------------------------------------------------
+-- TEAM CHECK
+----------------------------------------------------
+local function IsEnemy(Player)
+
+	if not LocalPlayer.Team and not Player.Team then
+		return true
+	end
+
+	if LocalPlayer.Team and Player.Team then
+		return LocalPlayer.Team ~= Player.Team
+	end
+
+	if LocalPlayer.TeamColor and Player.TeamColor then
+		return LocalPlayer.TeamColor ~= Player.TeamColor
+	end
+
+	return true
+end
+
+----------------------------------------------------
+-- WALL CHECK
+----------------------------------------------------
+local function IsVisible(Player)
+
+	if not Player.Character then
+		return false
+	end
+
+	local Head = Player.Character:FindFirstChild("Head")
+
+	if not Head then
+		return false
+	end
+
+	local Origin = Camera.CFrame.Position
+	local Direction = Head.Position - Origin
+
+	local Params = RaycastParams.new()
+	Params.FilterType = Enum.RaycastFilterType.Blacklist
+	Params.FilterDescendantsInstances = {
+		LocalPlayer.Character,
+		Camera
+	}
+
+	local Result = workspace:Raycast(
+		Origin,
+		Direction,
+		Params
+	)
+
+	if Result then
+		return Result.Instance:IsDescendantOf(Player.Character)
+	end
+
+	return true
+end
+
+----------------------------------------------------
+-- GET TARGET
+----------------------------------------------------
+local function GetNearestPlayer()
+
+	local Closest = nil
+	local Shortest = FOVRadius
+
+	for _, Player in pairs(Players:GetPlayers()) do
+
+		if Player ~= LocalPlayer
+		and Player.Character
+		and Player.Character:FindFirstChild("Humanoid")
+		and Player.Character:FindFirstChild("HumanoidRootPart")
+		and Player.Character:FindFirstChild("Head")
+		and Player.Character.Humanoid.Health > 0
+		and IsEnemy(Player) then
+
+			if IsVisible(Player) then
+
+				local Head = Player.Character.Head
+
+				local Pos, Visible = Camera:WorldToViewportPoint(Head.Position)
+
+				if Visible then
+
+					local Distance = (
+						Vector2.new(Pos.X, Pos.Y)
+						-
+						Vector2.new(
+							Camera.ViewportSize.X / 2,
+							Camera.ViewportSize.Y / 2
+						)
+					).Magnitude
+
+					if Distance < Shortest then
+						Shortest = Distance
+						Closest = Player
+					end
+				end
+			end
+		end
+	end
+
+	return Closest
+end
+
+----------------------------------------------------
+-- TOGGLE
+----------------------------------------------------
+Button.MouseButton1Click:Connect(function()
+
+	Enabled = not Enabled
+
+	if Enabled then
+		Button.Text = "AIMBOTTED"
+		Button.BackgroundColor3 = Color3.fromRGB(0,170,0)
+	else
+		Button.Text = "Aimbot"
+		Button.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		CurrentTarget = nil
+	end
+end)
+
+----------------------------------------------------
+-- MAIN LOOP
+----------------------------------------------------
+RunService.RenderStepped:Connect(function()
+
+	if not Enabled then
+		return
+	end
+
+	------------------------------------------------
+	-- REMOVE BAD TARGET
+	------------------------------------------------
+	if CurrentTarget then
+
+		if not CurrentTarget.Character
+		or not CurrentTarget.Character:FindFirstChild("Humanoid")
+		or not CurrentTarget.Character:FindFirstChild("Head")
+		or CurrentTarget.Character.Humanoid.Health <= 0
+		or not IsVisible(CurrentTarget)
+		or not IsEnemy(CurrentTarget) then
+
+			CurrentTarget = nil
+		end
+	end
+
+	------------------------------------------------
+	-- FIND TARGET
+	------------------------------------------------
+	if not CurrentTarget then
+		CurrentTarget = GetNearestPlayer()
+	end
+
+	------------------------------------------------
+	-- FAST SMOOTH AIM
+	------------------------------------------------
+	if CurrentTarget
+	and CurrentTarget.Character
+	and CurrentTarget.Character:FindFirstChild("Head") then
+
+		local Head = CurrentTarget.Character.Head
+
+		local AimCF = CFrame.lookAt(
+			Camera.CFrame.Position,
+			Head.Position
+		)
+
+		Camera.CFrame = Camera.CFrame:Lerp(
+			AimCF,
+			Smoothness
+		)
+	end
+end)
