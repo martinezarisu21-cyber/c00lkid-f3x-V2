@@ -1,0 +1,545 @@
+-- Roblox Lua Script for F3X Classic GLOBAL Decal Changer + Fire Effects + Multi-Page Utilities
+local Player = game:GetService("Players").LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+if PlayerGui:FindFirstChild("F3XDecalChangerGlobal") then
+    PlayerGui.F3XDecalChangerGlobal:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "F3XDecalChangerGlobal"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+-- Main Container Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 340, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -170, 0.5, -130)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+MainFrame.BorderSizePixel = 3
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+-- Header Title Block
+local TitleBlock = Instance.new("Frame")
+TitleBlock.Size = UDim2.new(1, 0, 0, 40)
+TitleBlock.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TitleBlock.BorderColor3 = Color3.fromRGB(255, 0, 0)
+TitleBlock.BorderSizePixel = 2
+TitleBlock.Parent = MainFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+TitleLabel.Position = UDim2.new(0.2, 0, 0, 0)
+TitleLabel.Text = "c00lgui reborn V2"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Font = Enum.Font.SourceSans
+TitleLabel.TextSize = 18
+TitleLabel.Parent = TitleBlock
+
+-- Page Navigation Buttons in Header
+local PrevPageBtn = Instance.new("TextButton")
+PrevPageBtn.Size = UDim2.new(0.2, 0, 1, 0)
+PrevPageBtn.Position = UDim2.new(0, 0, 0, 0)
+PrevPageBtn.Text = "<"
+PrevPageBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+PrevPageBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+PrevPageBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+PrevPageBtn.BorderSizePixel = 1
+PrevPageBtn.Font = Enum.Font.SourceSansBold
+PrevPageBtn.TextSize = 20
+PrevPageBtn.Parent = TitleBlock
+
+local NextPageBtn = Instance.new("TextButton")
+NextPageBtn.Size = UDim2.new(0.2, 0, 1, 0)
+NextPageBtn.Position = UDim2.new(0.8, 0, 0, 0)
+NextPageBtn.Text = ">"
+NextPageBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+NextPageBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+NextPageBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+NextPageBtn.BorderSizePixel = 1
+NextPageBtn.Font = Enum.Font.SourceSansBold
+NextPageBtn.TextSize = 20
+NextPageBtn.Parent = TitleBlock
+
+-- Footer Frame
+local FooterBlock = Instance.new("Frame")
+FooterBlock.Size = UDim2.new(1, 0, 0, 30)
+FooterBlock.Position = UDim2.new(0, 0, 1, -30)
+FooterBlock.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+FooterBlock.BorderColor3 = Color3.fromRGB(255, 0, 0)
+FooterBlock.BorderSizePixel = 2
+FooterBlock.Parent = MainFrame
+
+local FooterLabel = Instance.new("TextButton")
+FooterLabel.Size = UDim2.new(1, 0, 1, 0)
+FooterLabel.Text = "Page 1 | Made by Qwertyyuiksj_6"
+FooterLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FooterLabel.BackgroundTransparency = 1
+FooterLabel.Font = Enum.Font.SourceSans
+FooterLabel.TextSize = 14
+FooterLabel.Parent = FooterBlock
+
+---------------- PAGE 1 HOLDERS ----------------
+local Page1Frame = Instance.new("Frame")
+Page1Frame.Size = UDim2.new(1, 0, 1, -70)
+Page1Frame.Position = UDim2.new(0, 0, 0, 40)
+Page1Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Page1Frame.BorderSizePixel = 0
+Page1Frame.Visible = true
+Page1Frame.Parent = MainFrame
+
+local InputSection = Instance.new("Frame")
+InputSection.Size = UDim2.new(1, 0, 0, 45)
+InputSection.Position = UDim2.new(0, 0, 0, 5)
+InputSection.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+InputSection.BorderColor3 = Color3.fromRGB(255, 0, 0)
+InputSection.BorderSizePixel = 2
+InputSection.Parent = Page1Frame
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.94, 0, 0.8, 0)
+TextBox.Position = UDim2.new(0.03, 0, 0.1, 0)
+TextBox.PlaceholderText = "Put Decal ID Here"
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+TextBox.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+TextBox.BorderColor3 = Color3.fromRGB(255, 0, 0)
+TextBox.BorderSizePixel = 1
+TextBox.Font = Enum.Font.SourceSans
+TextBox.TextSize = 15
+TextBox.Parent = InputSection
+
+local ButtonGrid = Instance.new("Frame")
+ButtonGrid.Size = UDim2.new(1, 0, 0, 130)
+ButtonGrid.Position = UDim2.new(0, 0, 0, 55)
+ButtonGrid.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ButtonGrid.BorderSizePixel = 0
+ButtonGrid.Parent = Page1Frame
+
+local DecalPanel = Instance.new("Frame")
+DecalPanel.Size = UDim2.new(0.5, -4, 1, 0)
+DecalPanel.Position = UDim2.new(0, 2, 0, 0)
+DecalPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+DecalPanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+DecalPanel.BorderSizePixel = 2
+DecalPanel.Parent = ButtonGrid
+
+local ActionButton = Instance.new("TextButton")
+ActionButton.Size = UDim2.new(0.9, 0, 0.8, 0)
+ActionButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+ActionButton.Text = "Change All\nParts\n(F3X)"
+ActionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ActionButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ActionButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+ActionButton.BorderSizePixel = 1
+ActionButton.Font = Enum.Font.SourceSansBold
+ActionButton.TextSize = 15
+ActionButton.Parent = DecalPanel
+
+local FirePanel = Instance.new("Frame")
+FirePanel.Size = UDim2.new(0.5, -4, 1, 0)
+FirePanel.Position = UDim2.new(0.5, 2, 0, 0)
+FirePanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+FirePanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+FirePanel.BorderSizePixel = 2
+FirePanel.Parent = ButtonGrid
+
+local FirePartsButton = Instance.new("TextButton")
+FirePartsButton.Size = UDim2.new(0.9, 0, 0.8, 0)
+FirePartsButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+FirePartsButton.Text = "Fire All\nParts /\nPlayers"
+FirePartsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FirePartsButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+FirePartsButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+FirePartsButton.BorderSizePixel = 1
+FirePartsButton.Font = Enum.Font.SourceSansBold
+FirePartsButton.TextSize = 15
+FirePartsButton.Parent = FirePanel
+
+
+---------------- PAGE 2 HOLDERS ----------------
+local Page2Frame = Instance.new("Frame")
+Page2Frame.Size = UDim2.new(1, 0, 1, -70)
+Page2Frame.Position = UDim2.new(0, 0, 0, 40)
+Page2Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Page2Frame.BorderSizePixel = 0
+Page2Frame.Visible = false
+Page2Frame.Parent = MainFrame
+
+local UnanchorPanel = Instance.new("Frame")
+UnanchorPanel.Size = UDim2.new(1, -4, 1, -10)
+UnanchorPanel.Position = UDim2.new(0, 2, 0, 5)
+UnanchorPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UnanchorPanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+UnanchorPanel.BorderSizePixel = 2
+UnanchorPanel.Parent = Page2Frame
+
+local UnanchorButton = Instance.new("TextButton")
+UnanchorButton.Size = UDim2.new(0.94, 0, 0.85, 0)
+UnanchorButton.Position = UDim2.new(0.03, 0, 0.075, 0)
+UnanchorButton.Text = "Unanchor All (FE Server)"
+UnanchorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+UnanchorButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UnanchorButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+UnanchorButton.BorderSizePixel = 1
+UnanchorButton.Font = Enum.Font.SourceSansBold
+UnanchorButton.TextSize = 16
+UnanchorButton.Parent = UnanchorPanel
+
+
+---------------- PAGE 3 HOLDERS ----------------
+local Page3Frame = Instance.new("Frame")
+Page3Frame.Size = UDim2.new(1, 0, 1, -70)
+Page3Frame.Position = UDim2.new(0, 0, 0, 40)
+Page3Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Page3Frame.BorderSizePixel = 0
+Page3Frame.Visible = false
+Page3Frame.Parent = MainFrame
+
+local SpookyPanel = Instance.new("Frame")
+SpookyPanel.Size = UDim2.new(0.5, -4, 1, -10)
+SpookyPanel.Position = UDim2.new(0, 2, 0, 5)
+SpookyPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SpookyPanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+SpookyPanel.BorderSizePixel = 2
+SpookyPanel.Parent = Page3Frame
+
+local SpookyButton = Instance.new("TextButton")
+SpookyButton.Size = UDim2.new(0.9, 0, 0.8, 0)
+SpookyButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+SpookyButton.Text = "Spooky\nScary\nSkeleton"
+SpookyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpookyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SpookyButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+SpookyButton.BorderSizePixel = 1
+SpookyButton.Font = Enum.Font.SourceSansBold
+SpookyButton.TextSize = 15
+SpookyButton.Parent = SpookyPanel
+
+local SpartaPanel = Instance.new("Frame")
+SpartaPanel.Size = UDim2.new(0.5, -4, 1, -10)
+SpartaPanel.Position = UDim2.new(0.5, 2, 0, 5)
+SpartaPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SpartaPanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+SpartaPanel.BorderSizePixel = 2
+SpartaPanel.Parent = Page3Frame
+
+local SpartaButton = Instance.new("TextButton")
+SpartaButton.Size = UDim2.new(0.9, 0, 0.8, 0)
+SpartaButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+SpartaButton.Text = "Sparta\nRemix"
+SpartaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpartaButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SpartaButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+SpartaButton.BorderSizePixel = 1
+SpartaButton.Font = Enum.Font.SourceSansBold
+SpartaButton.TextSize = 15
+SpartaButton.Parent = SpartaPanel
+
+
+---------------- PAGE 4 HOLDERS ----------------
+local Page4Frame = Instance.new("Frame")
+Page4Frame.Size = UDim2.new(1, 0, 1, -70)
+Page4Frame.Position = UDim2.new(0, 0, 0, 40)
+Page4Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Page4Frame.BorderSizePixel = 0
+Page4Frame.Visible = false
+Page4Frame.Parent = MainFrame
+
+local DeletePanel = Instance.new("Frame")
+DeletePanel.Size = UDim2.new(1, -4, 1, -10)
+DeletePanel.Position = UDim2.new(0, 2, 0, 5)
+DeletePanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+DeletePanel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+DeletePanel.BorderSizePixel = 2
+DeletePanel.Parent = Page4Frame
+
+local DeleteButton = Instance.new("TextButton")
+DeleteButton.Size = UDim2.new(0.94, 0, 0.85, 0)
+DeleteButton.Position = UDim2.new(0.03, 0, 0.075, 0)
+DeleteButton.Text = "Delete All (FE Server Fix)"
+DeleteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeleteButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+DeleteButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+DeleteButton.BorderSizePixel = 1
+DeleteButton.Font = Enum.Font.SourceSansBold
+DeleteButton.TextSize = 16
+DeleteButton.Parent = DeletePanel
+
+
+---------------- PAGE NAVIGATION SYSTEM ----------------
+local currentPage = 1
+local maxPages = 4
+
+local function updatePageVisibility()
+    Page1Frame.Visible = (currentPage == 1)
+    Page2Frame.Visible = (currentPage == 2)
+    Page3Frame.Visible = (currentPage == 3)
+    Page4Frame.Visible = (currentPage == 4)
+    FooterLabel.Text = "Page " .. tostring(currentPage) .. " | Made by Qwertyyuiksj_6"
+end
+
+PrevPageBtn.MouseButton1Click:Connect(function()
+    currentPage = currentPage - 1
+    if currentPage < 1 then currentPage = maxPages end
+    updatePageVisibility()
+end)
+
+NextPageBtn.MouseButton1Click:Connect(function()
+    currentPage = currentPage + 1
+    if currentPage > maxPages then currentPage = 1 end
+    updatePageVisibility()
+end)
+
+FooterLabel.MouseButton1Click:Connect(function()
+    currentPage = currentPage + 1
+    if currentPage > maxPages then currentPage = 1 end
+    updatePageVisibility()
+end)
+
+
+---------------- RECONSTRUCTED FUNCTION LOGIC ----------------
+local function getF3XTool()
+    local character = Player.Character
+    local backpack = Player.Backpack
+    
+    if character then
+        for _, child in ipairs(character:GetChildren()) do
+            if child:IsA("Tool") and (string.find(child.Name, "F3X") or string.find(child.Name, "Building")) then
+                return child
+            end
+        end
+    end
+    
+    if backpack then
+        for _, child in ipairs(backpack:GetChildren()) do
+            if child:IsA("Tool") and (string.find(child.Name, "F3X") or string.find(child.Name, "Building")) then
+                return child
+            end
+        end
+    end
+    return nil
+end
+
+local function fireChatMessages(messagesList)
+    local textChannel = game:GetService("TextChatService"):FindFirstChild("TextChannels") and game:GetService("TextChatService").TextChannels:FindFirstChild("RBXGeneral")
+    local replicatedStorageRemote = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents") and game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
+    
+    task.spawn(function()
+        for _, msg in ipairs(messagesList) do
+            if textChannel then
+                textChannel:SendAsync(msg)
+            elseif replicatedStorageRemote then
+                replicatedStorageRemote:FireServer(msg, "All")
+            end
+            task.wait(0.4)
+        end
+    end)
+end
+
+-- Decal Changer Logic
+ActionButton.MouseButton1Click:Connect(function()
+    local decalId = TextBox.Text
+    if decalId == "" or decalId == "Put Decal ID Here" then
+        ActionButton.Text = "Input ID First!"
+        task.wait(2)
+        ActionButton.Text = "Change All\nParts\n(F3X)"
+        return
+    end
+    
+    local f3x = getF3XTool()
+    if not f3x then
+        ActionButton.Text = "No F3X Found!\nHold Tool."
+        task.wait(2)
+        ActionButton.Text = "Change All\nParts\n(F3X)"
+        return
+    end
+    
+    local syncAPI = f3x:FindFirstChild("SyncAPI") or f3x:FindFirstChild("Server") or f3x:FindFirstChild("Sync")
+    if not syncAPI then return end
+    local serverEndpoint = syncAPI:FindFirstChild("ServerEndpoint") or syncAPI
+    
+    local formattedId = tostring(decalId)
+    if not string.find(formattedId, "http") and not string.find(formattedId, "rbxassetid") then
+        formattedId = "rbxassetid://" .. formattedId
+    end
+
+    local allParts = {}
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then table.insert(allParts, obj) end
+    end
+
+    if #allParts > 0 then
+        local BATCH_SIZE = 40
+        local faces = {Enum.NormalId.Top, Enum.NormalId.Bottom, Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right}
+        ActionButton.Text = "Running..."
+        task.spawn(function()
+            for _, face in ipairs(faces) do
+                for i = 1, #allParts, BATCH_SIZE do
+                    local creationTargets, syncTargets = {}, {}
+                    for j = i, math.min(i + BATCH_SIZE - 1, #allParts) do
+                        local part = allParts[j]
+                        if part and part.Parent then
+                            table.insert(creationTargets, {["Part"] = part, ["Face"] = face, ["TextureType"] = "Decal"})
+                            table.insert(syncTargets, {["Part"] = part, ["Face"] = face, ["TextureType"] = "Decal", ["Texture"] = formattedId})
+                        end
+                    end
+                    pcall(function()
+                        serverEndpoint:InvokeServer("CreateTextures", creationTargets)
+                        serverEndpoint:InvokeServer("SyncTexture", syncTargets)
+                    end)
+                    task.wait()
+                end
+            end
+            ActionButton.Text = "Success!"
+            task.wait(2)
+            ActionButton.Text = "Change All\nParts\n(F3X)"
+        end)
+    end
+end)
+
+-- Fire Logic
+FirePartsButton.MouseButton1Click:Connect(function()
+    FirePartsButton.Text = "Igniting..."
+    task.spawn(function()
+        local batchCounter = 0
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:FindFirstChildOfClass("Fire") then
+                local fire = Instance.new("Fire")
+                fire.Size, fire.Heat = 5, 5
+                fire.Parent = obj
+                batchCounter = batchCounter + 1
+                if batchCounter >= 30 then
+                    batchCounter = 0
+                    task.wait()
+                end
+            end
+        end
+        FirePartsButton.Text = "Done!"
+        task.wait(2)
+        FirePartsButton.Text = "Fire All\nParts /\nPlayers"
+    end)
+end)
+
+-- Page 2 Staggered FE Server Unanchor Logic
+local unanchoring = false
+UnanchorButton.MouseButton1Click:Connect(function()
+    if unanchoring then return end
+    
+    local f3x = getF3XTool()
+    if not f3x then
+        UnanchorButton.Text = "Hold F3X Tool First!"
+        task.wait(2)
+        UnanchorButton.Text = "Unanchor All (FE Server)"
+        return
+    end
+    
+    local syncAPI = f3x:FindFirstChild("SyncAPI") or f3x:FindFirstChild("Server") or f3x:FindFirstChild("Sync")
+    if not syncAPI then return end
+    local serverEndpoint = syncAPI:FindFirstChild("ServerEndpoint") or syncAPI
+    
+    unanchoring = true
+    UnanchorButton.Text = "Dropping Server..."
+    
+    task.spawn(function()
+        local batch = {}
+        local BATCH_SIZE = 30
+        
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and obj.Anchored and not obj:IsDescendantOf(Player.Character) then
+                table.insert(batch, obj)
+                
+                if #batch >= BATCH_SIZE then
+                    pcall(function()
+                        serverEndpoint:InvokeServer("SyncAnchor", batch, false)
+                    end)
+                    table.clear(batch)
+                    task.wait()
+                end
+            end
+        end
+        
+        if #batch > 0 then
+            pcall(function()
+                serverEndpoint:InvokeServer("SyncAnchor", batch, false)
+            end)
+        end
+        
+        UnanchorButton.Text = "Finished!"
+        task.wait(2)
+        UnanchorButton.Text = "Unanchor All (FE Server)"
+        unanchoring = false
+    end)
+end)
+
+-- Page 3 Triggers
+SpookyButton.MouseButton1Click:Connect(function()
+    fireChatMessages({I";music 95156028272944", ";pitch 0.175", ";volume 3.5"})
+end)
+
+SpartaButton.MouseButton1Click:Connect(function()
+    fireChatMessages({";music 73293994328169", ";pitch 0.1", ";volume 2.5"})
+end)
+
+-- Page 4 FE Server Delete Logic
+local deleting = false
+DeleteButton.MouseButton1Click:Connect(function()
+    if deleting then return end
+    
+    local f3x = getF3XTool()
+    if not f3x then
+        DeleteButton.Text = "Hold F3X Tool First!"
+        task.wait(2)
+        DeleteButton.Text = "Delete All (FE Server Fix)"
+        return
+    end
+    
+    local syncAPI = f3x:FindFirstChild("SyncAPI") or f3x:FindFirstChild("Server") or f3x:FindFirstChild("Sync")
+    if not syncAPI then return end
+    local serverEndpoint = syncAPI:FindFirstChild("ServerEndpoint") or syncAPI
+    
+    deleting = true
+    DeleteButton.Text = "Deleting Workspace..."
+    
+    task.spawn(function()
+        local fullTargetList = {}
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(Player.Character) and obj.Name ~= "Terrain" then
+                table.insert(fullTargetList, obj)
+            end
+        end
+        
+        local batch = {}
+        local BATCH_SIZE = 30
+        
+        for _, part in ipairs(fullTargetList) do
+            if part and part.Parent then
+                table.insert(batch, part)
+                
+                if #batch >= BATCH_SIZE then
+                    pcall(function()
+                        serverEndpoint:InvokeServer("Remove", batch)
+                    end)
+                    table.clear(batch)
+                    task.wait()
+                end
+            end
+        end
+        
+        if #batch > 0 then
+            pcall(function()
+                serverEndpoint:InvokeServer("Remove", batch)
+            end)
+        end
+        
+        DeleteButton.Text = "Finished Cleanup!"
+        task.wait(2)
+        DeleteButton.Text = "Delete All (FE Server Fix)"
+        deleting = false
+    end)
+end)
