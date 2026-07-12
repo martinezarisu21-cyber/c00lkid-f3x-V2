@@ -1,0 +1,217 @@
+-- Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Main UI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PremiumReportUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+-- Main Frame (Sleek Dark Theme)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 550, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24) -- Deep dark blue/grey
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- Neon Border Accent
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(0, 162, 255) -- Electric Blue Accent
+UIStroke.Thickness = 1.5
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+UIStroke.Parent = MainFrame
+
+-- Left Sidebar Container
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 140, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local SidebarCorner = Instance.new("UICorner")
+SidebarCorner.CornerRadius = UDim.new(0, 12)
+SidebarCorner.Parent = Sidebar
+
+-- Hide right corners of sidebar to blend cleanly
+local SidebarFix = Instance.new("Frame")
+SidebarFix.Size = UDim2.new(0, 20, 1, 0)
+SidebarFix.Position = UDim2.new(1, -20, 0, 0)
+SidebarFix.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+SidebarFix.BorderSizePixel = 0
+SidebarFix.Parent = Sidebar
+
+-- Title / Logo
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.BackgroundTransparency = 1
+Title.Text = "NEXUS v1.0"
+Title.TextColor3 = Color3.fromRGB(0, 162, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Sidebar
+
+-- Tab Button Layout
+local TabListLayout = Instance.new("UIListLayout")
+TabListLayout.Padding = UDim.new(0, 8)
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+TabListLayout.Parent = Sidebar
+
+local TabButtonContainer = Instance.new("Frame")
+TabButtonContainer.Size = UDim2.new(1, 0, 1, -60)
+TabButtonContainer.Position = UDim2.new(0, 0, 0, 50)
+TabButtonContainer.BackgroundTransparency = 1
+TabButtonContainer.Parent = Sidebar
+TabListLayout.Parent = TabButtonContainer
+
+-- Pages Content Container
+local PagesContainer = Instance.new("Frame")
+PagesContainer.Size = UDim2.new(1, -160, 1, -30)
+PagesContainer.Position = UDim2.new(0, 150, 0, 15)
+PagesContainer.BackgroundTransparency = 1
+PagesContainer.Parent = MainFrame
+
+-- Data Structure
+local ReportData = {
+	Bullying = {
+		"This player is constantly harassing me in chat.",
+		"They are calling other users offensive names repeatedly.",
+		"Targeting and following me across different servers to bully me.",
+		"Encouraging other players in the server to gang up on me.",
+		"Using bypass words to insult and degrade my character."
+	},
+	Inappropriate = {
+		"This player is wearing a highly inappropriate/bypassed custom clothing avatar.",
+		"Their avatar features offensive imagery or text that violates terms.",
+		"Using animations/emotes in an inappropriate and suggestive manner.",
+		"Their username/display name contains highly inappropriate language.",
+		"Displaying an avatar intended to bypass the chat/safety filters."
+	},
+	Cheating = {
+		"This user is utilizing noclip exploits to pass through solid walls and geometry.",
+		"The player is using speed hacks and teleporting across the map instantly.",
+		"Using aimbot/silent aim to automatically lock onto targets without missing.",
+		"Exploiting the game's economy/stats to gain an unfair advantage over others.",
+		"Flyhacking and hovering in the air where normal movement is impossible."
+	}
+}
+
+-- Copy Utility
+local function copyToClipboard(text)
+	if setclipboard then
+		setclipboard(text)
+	else
+		print("Copied: " .. text)
+	end
+end
+
+local pages = {}
+local tabButtons = {}
+
+local function switchTab(tabName)
+	for name, page in pairs(pages) do
+		if name == tabName then
+			page.Visible = true
+			TweenService:Create(tabButtons[name], TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 162, 255), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+		else
+			page.Visible = false
+			TweenService:Create(tabButtons[name], TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 40), TextColor3 = Color3.fromRGB(150, 150, 150)}):Play()
+		end
+	end
+end
+
+-- Generate dynamic layout elements
+for tabName, textList in pairs(ReportData) do
+	-- Creating Sidebar Tab Buttons
+	local TabButton = Instance.new("TextButton")
+	TabButton.Size = UDim2.new(0.9, 0, 0, 35)
+	TabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+	TabButton.Text = tabName
+	TabButton.TextColor3 = Color3.fromRGB(150, 150, 150)
+	TabButton.TextSize = 13
+	TabButton.Font = Enum.Font.GothamSemibold
+	TabButton.BorderSizePixel = 0
+	TabButton.Parent = TabButtonContainer
+	
+	local TabBtnCorner = Instance.new("UICorner")
+	TabBtnCorner.CornerRadius = UDim.new(0, 6)
+	TabBtnCorner.Parent = TabButton
+	
+	tabButtons[tabName] = TabButton
+	
+	-- Content Scrolling Frame
+	local ScrollFrame = Instance.new("ScrollingFrame")
+	ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
+	ScrollFrame.BackgroundTransparency = 1
+	ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, #textList * 50)
+	ScrollFrame.ScrollBarThickness = 4
+	ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 162, 255)
+	ScrollFrame.Visible = false
+	ScrollFrame.Parent = PagesContainer
+	
+	pages[tabName] = ScrollFrame
+	
+	local UIListLayout = Instance.new("UIListLayout")
+	UIListLayout.Padding = UDim.new(0, 8)
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout.Parent = ScrollFrame
+	
+	-- Populating Text Selection Options
+	for i, reportText in ipairs(textList) do
+		local TextButton = Instance.new("TextButton")
+		TextButton.Size = UDim2.new(1, -8, 0, 42)
+		TextButton.BackgroundColor3 = Color3.fromRGB(26, 26, 36)
+		TextButton.Text = "   " .. reportText
+		TextButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+		TextButton.TextSize = 11
+		TextButton.TextXAlignment = Enum.TextXAlignment.Left
+		TextButton.Font = Enum.Font.Gotham
+		TextButton.TextWrapped = true
+		TextButton.BorderSizePixel = 0
+		TextButton.Parent = ScrollFrame
+		
+		local ButtonCorner = Instance.new("UICorner")
+		ButtonCorner.CornerRadius = UDim.new(0, 6)
+		ButtonCorner.Parent = TextButton
+		
+		-- Button Hover Animations
+		TextButton.MouseEnter:Connect(function()
+			TweenService:Create(TextButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(36, 36, 48), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+		end)
+		TextButton.MouseLeave:Connect(function()
+			TweenService:Create(TextButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(26, 26, 36), TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+		end)
+		
+		-- Click Action Sequence
+		TextButton.MouseButton1Click:Connect(function()
+			copyToClipboard(reportText)
+			
+			local originalColor = TextButton.BackgroundColor3
+			TextButton.BackgroundColor3 = Color3.fromRGB(46, 125, 50) -- Success Green
+			TextButton.Text = "   COPIED PHRASE TO CLIPBOARD!"
+			
+			task.wait(0.5)
+			TextButton.BackgroundColor3 = originalColor
+			TextButton.Text = "   " .. reportText
+		end)
+	end
+	
+	TabButton.MouseButton1Click:Connect(function()
+		switchTab(tabName)
+	end)
+end
+
+-- Load Default View
+switchTab("Bullying")
