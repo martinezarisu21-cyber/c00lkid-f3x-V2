@@ -1,0 +1,312 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local camera = workspace.CurrentCamera
+
+-- Track character respawning
+localPlayer.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
+end)
+
+--------------------------------------------------------------------------------
+-- UI SETUP
+--------------------------------------------------------------------------------
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "OrbitGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = localPlayer:WaitForChild("PlayerGui")
+
+-- Main Container Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 220, 0, 220)
+mainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+mainFrame.ClipsDescendants = true -- Keeps particles inside the frame
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 10)
+frameCorner.Parent = mainFrame
+
+-- Rainbow Glowing UI Outline
+local uiStroke = Instance.new("UIStroke")
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Thickness = 2
+uiStroke.Transparency = 0.2
+uiStroke.Parent = mainFrame
+
+-- Updated Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.Position = UDim2.new(0, 0, 0, 5)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Made by Qwertyyuiksj_6/C00lkid"
+titleLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+titleLabel.TextSize = 13
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.ZIndex = 2
+titleLabel.Parent = mainFrame
+
+-- Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 180, 0, 40)
+toggleButton.Position = UDim2.new(0.5, -90, 0, 38)
+toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Text = "Orbit: OFF"
+toggleButton.TextSize = 16
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.ZIndex = 2
+toggleButton.Parent = mainFrame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 6)
+btnCorner.Parent = toggleButton
+
+-- "OR" Label
+local orLabel = Instance.new("TextLabel")
+orLabel.Name = "OrLabel"
+orLabel.Size = UDim2.new(1, 0, 0, 20)
+orLabel.Position = UDim2.new(0, 0, 0, 84)
+orLabel.BackgroundTransparency = 1
+orLabel.Text = "OR"
+orLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+orLabel.TextSize = 14
+orLabel.Font = Enum.Font.SourceSansBold
+orLabel.ZIndex = 2
+orLabel.Parent = mainFrame
+
+-- Target Input Text Box
+local targetTextBox = Instance.new("TextBox")
+targetTextBox.Name = "TargetTextBox"
+targetTextBox.Size = UDim2.new(0, 180, 0, 40)
+targetTextBox.Position = UDim2.new(0.5, -90, 0, 108)
+targetTextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+targetTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+targetTextBox.PlaceholderText = "Put username/display to target"
+targetTextBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+targetTextBox.Text = ""
+targetTextBox.TextSize = 12
+targetTextBox.Font = Enum.Font.SourceSans
+targetTextBox.ClearTextOnFocus = false
+targetTextBox.ZIndex = 2
+targetTextBox.Parent = mainFrame
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 6)
+boxCorner.Parent = targetTextBox
+
+--------------------------------------------------------------------------------
+-- SPINNING IMAGE (BOTTOM LEFT)
+--------------------------------------------------------------------------------
+local spinImage = Instance.new("ImageLabel")
+spinImage.Name = "SpinImage"
+spinImage.Size = UDim2.new(0, 45, 0, 45)
+spinImage.Position = UDim2.new(0, 10, 1, -55) -- Positioned on the bottom left
+spinImage.BackgroundTransparency = 1
+spinImage.Image = "rbxassetid://158118263"
+spinImage.ZIndex = 3
+spinImage.Parent = mainFrame
+
+-- Continuous slow image rotation loop
+local IMAGE_SPIN_SPEED = 90 -- Degrees per second (slow/smooth rotation)
+task.spawn(function()
+    while true do
+        local dt = RunService.RenderStepped:Wait()
+        if spinImage and spinImage.Parent then
+            spinImage.Rotation = (spinImage.Rotation + (IMAGE_SPIN_SPEED * dt)) % 360
+        end
+    end
+end)
+
+--------------------------------------------------------------------------------
+-- UI FLOATING PARTICLES EFFECT
+--------------------------------------------------------------------------------
+local function createParticle()
+    local particle = Instance.new("Frame")
+    particle.Size = UDim2.new(0, math.random(3, 6), 0, math.random(3, 6))
+    particle.Position = UDim2.new(math.random(), 0, 1, 0)
+    particle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    particle.BackgroundTransparency = 0.5
+    particle.BorderSizePixel = 0
+    particle.ZIndex = 1
+    particle.Parent = mainFrame
+
+    local pCorner = Instance.new("UICorner")
+    pCorner.CornerRadius = UDim.new(1, 0)
+    pCorner.Parent = particle
+
+    local duration = math.random(3, 6)
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local goal = {
+        Position = UDim2.new(particle.Position.X.Scale, 0, -0.1, 0),
+        BackgroundTransparency = 1
+    }
+
+    local tween = TweenService:Create(particle, tweenInfo, goal)
+    tween:Play()
+    tween.Completed:Connect(function()
+        particle:Destroy()
+    end)
+end
+
+-- Spawn floating particles periodically
+task.spawn(function()
+    while true do
+        createParticle()
+        task.wait(0.4)
+    end
+end)
+
+--------------------------------------------------------------------------------
+-- CHARACTER HIGHLIGHT EFFECT (MEDIUM RAINBOW GLOW)
+--------------------------------------------------------------------------------
+local highlight = Instance.new("Highlight")
+highlight.Name = "OrbitHighlight"
+highlight.FillTransparency = 0.85
+highlight.OutlineTransparency = 0.2
+highlight.Enabled = false
+
+--------------------------------------------------------------------------------
+-- ORBIT & RAINBOW LOGIC
+--------------------------------------------------------------------------------
+local isOrbiting = false
+local orbitConnection = nil
+local originalCFrame = nil
+
+local ORBIT_RADIUS = 2.5
+local ORBIT_SPEED = 45
+local CAMERA_OFFSET = Vector3.new(0, 4, 10)
+
+-- Search player by Name or DisplayName
+local function getSpecificPlayer(targetName)
+    if targetName == "" then return nil end
+    local searchLower = targetName:lower()
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer then
+            local username = player.Name:lower()
+            local displayName = player.DisplayName:lower()
+
+            if username:sub(1, #searchLower) == searchLower or displayName:sub(1, #searchLower) == searchLower then
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    return player.Character
+                end
+            end
+        end
+    end
+    return nil
+end
+
+-- Search nearest player
+local function getNearestPlayer()
+    local nearestTarget = nil
+    local shortestDistance = math.huge
+
+    if not humanoidRootPart then return nil end
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local targetHRP = player.Character.HumanoidRootPart
+            local distance = (targetHRP.Position - humanoidRootPart.Position).Magnitude
+            
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestTarget = player.Character
+            end
+        end
+    end
+
+    return nearestTarget
+end
+
+-- Toggle behavior
+toggleButton.MouseButton1Click:Connect(function()
+    isOrbiting = not isOrbiting
+
+    if isOrbiting then
+        toggleButton.Text = "Orbit: ON"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
+
+        if humanoidRootPart then
+            originalCFrame = humanoidRootPart.CFrame
+        end
+
+        -- Attach rainbow highlight to local character
+        if character then
+            highlight.Parent = character
+            highlight.Enabled = true
+        end
+
+        camera.CameraType = Enum.CameraType.Scriptable
+
+        local currentAngle = 0
+        local hue = 0
+
+        -- Main Orbit and Visual Loop
+        orbitConnection = RunService.RenderStepped:Connect(function(deltaTime)
+            if not isOrbiting or not humanoidRootPart then return end
+
+            -- Smooth rainbow color cycle
+            hue = (hue + (0.5 * deltaTime)) % 1
+            local rainbowColor = Color3.fromHSV(hue, 0.8, 1)
+
+            highlight.FillColor = rainbowColor
+            highlight.OutlineColor = rainbowColor
+            uiStroke.Color = rainbowColor
+
+            -- Orbit calculation
+            local inputTarget = targetTextBox.Text
+            local targetCharacter = nil
+
+            if inputTarget ~= "" then
+                targetCharacter = getSpecificPlayer(inputTarget)
+            else
+                targetCharacter = getNearestPlayer()
+            end
+
+            if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
+                local targetHRP = targetCharacter.HumanoidRootPart
+                
+                currentAngle = currentAngle + (ORBIT_SPEED * deltaTime)
+                local offset = CFrame.Angles(0, currentAngle, 0) * CFrame.new(0, 0, ORBIT_RADIUS)
+                humanoidRootPart.CFrame = targetHRP.CFrame * offset
+
+                -- Locked stable camera
+                local targetPos = targetHRP.Position
+                local cameraPos = targetPos + CAMERA_OFFSET
+                camera.CFrame = CFrame.new(cameraPos, targetPos)
+            end
+        end)
+    else
+        toggleButton.Text = "Orbit: OFF"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+
+        -- Disable rainbow highlight & restore UI stroke
+        highlight.Enabled = false
+        highlight.Parent = nil
+        uiStroke.Color = Color3.fromRGB(255, 255, 255)
+
+        camera.CameraType = Enum.CameraType.Custom
+
+        if orbitConnection then
+            orbitConnection:Disconnect()
+            orbitConnection = nil
+        end
+
+        if humanoidRootPart and originalCFrame then
+            humanoidRootPart.CFrame = originalCFrame
+        end
+    end
+end)
